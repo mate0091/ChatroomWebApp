@@ -1,25 +1,24 @@
 package DataAccess;
 
-import Models.User;
+import Models.Friends;
 import MySQLConnection.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO implements DAOI<User>
+public class FriendsDAO implements DAOI<Friends>
 {
+
     @Override
-    public List<User> findAll()
-    {
+    public List<Friends> findAll() {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user";
+        String query = "Select * FROM chatroom.friends;";
 
         try
         {
@@ -28,7 +27,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs);
+            return createFriends(rs);
         }
         catch (Exception e)
         {
@@ -46,13 +45,12 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public User findById(int id)
-    {
+    public Friends findById(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user where id=?;";
+        String query = "Select * FROM chatroom.friends where id=?;";
 
         try
         {
@@ -62,7 +60,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs).get(0);
+            return createFriends(rs).get(0);
         }
         catch (Exception e)
         {
@@ -80,19 +78,20 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean insert(User obj)
-    {
+    public boolean insert(Friends obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "INSERT INTO chatroom.user (username, password) VALUES(?, ?);";
+        String query = "INSERT INTO chatroom.user (userid_1, userid_2) VALUES(?, ?);";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj.getUsername());
-            stat.setString(2, obj.getPassword());
+            stat.setInt(1, obj.getUserID1());
+            stat.setInt(2, obj.getUserID2());
+
+            System.out.println("Query: " + query + "\n");
 
             stat.executeUpdate();
             return true;
@@ -112,19 +111,18 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean update(User obj1, User obj2)
-    {
+    public boolean update(Friends obj1, Friends obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "UPDATE chatroom.user SET username=?, password=?  WHERE id=?;";
+        String query = "UPDATE chatroom.friends SET userid_1=?, userid_2=?  WHERE id=?;";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj2.getUsername());
-            stat.setString(2, obj2.getPassword());
+            stat.setInt(1, obj2.getUserID1());
+            stat.setInt(2, obj2.getUserID2());
             stat.setInt(3, obj1.getId());
 
             stat.executeUpdate();
@@ -145,12 +143,11 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean delete(User obj)
-    {
+    public boolean delete(Friends obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "DELETE FROM chatroom.user where id=?;";
+        String query = "DELETE FROM chatroom.friends where id=?;";
 
         try
         {
@@ -175,15 +172,15 @@ public class UserDAO implements DAOI<User>
         return false;
     }
 
-    private List<User> createUsers(ResultSet rs)
+    private List<Friends> createFriends(ResultSet rs)
     {
-        List<User> results = new ArrayList<>();
+        List<Friends> results = new ArrayList<>();
 
         try
         {
             while(rs.next())
             {
-                User instance = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                Friends instance = new Friends(rs.getInt("id"), rs.getInt("userid_1"), rs.getInt("userid_2"));
                 results.add(instance);
             }
 

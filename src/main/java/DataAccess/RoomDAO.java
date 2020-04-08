@@ -1,25 +1,23 @@
 package DataAccess;
 
-import Models.User;
+import Models.Room;
 import MySQLConnection.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO implements DAOI<User>
+public class RoomDAO implements DAOI<Room>
 {
     @Override
-    public List<User> findAll()
-    {
+    public List<Room> findAll() {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user";
+        String query = "Select * FROM chatroom.room;";
 
         try
         {
@@ -28,7 +26,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs);
+            return createRooms(rs);
         }
         catch (Exception e)
         {
@@ -46,13 +44,12 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public User findById(int id)
-    {
+    public Room findById(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user where id=?;";
+        String query = "Select * FROM chatroom.room where id=?;";
 
         try
         {
@@ -62,7 +59,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs).get(0);
+            return createRooms(rs).get(0);
         }
         catch (Exception e)
         {
@@ -80,19 +77,19 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean insert(User obj)
-    {
+    public boolean insert(Room obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "INSERT INTO chatroom.user (username, password) VALUES(?, ?);";
+        String query = "INSERT INTO chatroom.room (type) VALUES(?);";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj.getUsername());
-            stat.setString(2, obj.getPassword());
+            stat.setString(1, obj.getType());
+
+            System.out.println("Query: " + query + "\n");
 
             stat.executeUpdate();
             return true;
@@ -112,20 +109,18 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean update(User obj1, User obj2)
-    {
+    public boolean update(Room obj1, Room obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "UPDATE chatroom.user SET username=?, password=?  WHERE id=?;";
+        String query = "UPDATE chatroom.message SET type=? WHERE id=?;";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj2.getUsername());
-            stat.setString(2, obj2.getPassword());
-            stat.setInt(3, obj1.getId());
+            stat.setString(1, obj2.getType());
+            stat.setInt(2, obj1.getId());
 
             stat.executeUpdate();
             return true;
@@ -145,12 +140,11 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean delete(User obj)
-    {
+    public boolean delete(Room obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "DELETE FROM chatroom.user where id=?;";
+        String query = "DELETE FROM chatroom.room where id=?;";
 
         try
         {
@@ -175,15 +169,15 @@ public class UserDAO implements DAOI<User>
         return false;
     }
 
-    private List<User> createUsers(ResultSet rs)
+    private List<Room> createRooms(ResultSet rs)
     {
-        List<User> results = new ArrayList<>();
+        List<Room> results = new ArrayList<>();
 
         try
         {
             while(rs.next())
             {
-                User instance = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                Room instance = new Room(rs.getInt("id"), rs.getString("type"));
                 results.add(instance);
             }
 

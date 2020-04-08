@@ -1,25 +1,23 @@
 package DataAccess;
 
-import Models.User;
+import Models.RoomMember;
 import MySQLConnection.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO implements DAOI<User>
+public class RoomMemberDAO implements DAOI<RoomMember>
 {
     @Override
-    public List<User> findAll()
-    {
+    public List<RoomMember> findAll() {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user";
+        String query = "Select * FROM chatroom.room_member;";
 
         try
         {
@@ -28,7 +26,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs);
+            return createRoomMembers(rs);
         }
         catch (Exception e)
         {
@@ -46,13 +44,12 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public User findById(int id)
-    {
+    public RoomMember findById(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user where id=?;";
+        String query = "Select * FROM chatroom.room_member where id=?;";
 
         try
         {
@@ -62,7 +59,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs).get(0);
+            return createRoomMembers(rs).get(0);
         }
         catch (Exception e)
         {
@@ -80,19 +77,21 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean insert(User obj)
-    {
+    public boolean insert(RoomMember obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "INSERT INTO chatroom.user (username, password) VALUES(?, ?);";
+        String query = "INSERT INTO chatroom.room_member (user_id, room_id, role) VALUES(?, ?, ?);";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj.getUsername());
-            stat.setString(2, obj.getPassword());
+            stat.setInt(1, obj.getUser_id());
+            stat.setInt(2, obj.getRoom_id());
+            stat.setString(3, obj.getRole());
+
+            System.out.println("Query: " + query + "\n");
 
             stat.executeUpdate();
             return true;
@@ -112,20 +111,20 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean update(User obj1, User obj2)
-    {
+    public boolean update(RoomMember obj1, RoomMember obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "UPDATE chatroom.user SET username=?, password=?  WHERE id=?;";
+        String query = "UPDATE chatroom.room_member SET user_id=?, room_id=?, role=? WHERE id=?;";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj2.getUsername());
-            stat.setString(2, obj2.getPassword());
-            stat.setInt(3, obj1.getId());
+            stat.setInt(1, obj2.getUser_id());
+            stat.setInt(2, obj2.getRoom_id());
+            stat.setString(3, obj2.getRole());
+            stat.setInt(4, obj1.getId());
 
             stat.executeUpdate();
             return true;
@@ -145,12 +144,11 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean delete(User obj)
-    {
+    public boolean delete(RoomMember obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "DELETE FROM chatroom.user where id=?;";
+        String query = "DELETE FROM chatroom.room_member where id=?;";
 
         try
         {
@@ -175,15 +173,15 @@ public class UserDAO implements DAOI<User>
         return false;
     }
 
-    private List<User> createUsers(ResultSet rs)
+    private List<RoomMember> createRoomMembers(ResultSet rs)
     {
-        List<User> results = new ArrayList<>();
+        List<RoomMember> results = new ArrayList<>();
 
         try
         {
             while(rs.next())
             {
-                User instance = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                RoomMember instance = new RoomMember(rs.getInt("id"), rs.getInt("user_id"), rs.getInt("room_id"), rs.getString("role"));
                 results.add(instance);
             }
 

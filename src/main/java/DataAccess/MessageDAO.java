@@ -1,25 +1,23 @@
 package DataAccess;
 
-import Models.User;
+import Models.Message;
 import MySQLConnection.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO implements DAOI<User>
+public class MessageDAO implements DAOI<Message>
 {
     @Override
-    public List<User> findAll()
-    {
+    public List<Message> findAll() {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user";
+        String query = "Select * FROM chatroom.message;";
 
         try
         {
@@ -28,7 +26,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs);
+            return createMessages(rs);
         }
         catch (Exception e)
         {
@@ -46,13 +44,12 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public User findById(int id)
-    {
+    public Message findById(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
         ResultSet rs = null;
 
-        String query = "Select * FROM chatroom.user where id=?;";
+        String query = "Select * FROM chatroom.message where id=?;";
 
         try
         {
@@ -62,7 +59,7 @@ public class UserDAO implements DAOI<User>
 
             rs = stat.executeQuery();
 
-            return createUsers(rs).get(0);
+            return createMessages(rs).get(0);
         }
         catch (Exception e)
         {
@@ -80,19 +77,20 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean insert(User obj)
-    {
+    public boolean insert(Message obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "INSERT INTO chatroom.user (username, password) VALUES(?, ?);";
+        String query = "INSERT INTO chatroom.message (date, data) VALUES(?, ?);";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj.getUsername());
-            stat.setString(2, obj.getPassword());
+            stat.setString(1, obj.getDateTime());
+            stat.setBlob(2, obj.getContent());
+
+            System.out.println("Query: " + query + "\n");
 
             stat.executeUpdate();
             return true;
@@ -112,19 +110,18 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean update(User obj1, User obj2)
-    {
+    public boolean update(Message obj1, Message obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "UPDATE chatroom.user SET username=?, password=?  WHERE id=?;";
+        String query = "UPDATE chatroom.message SET date=?, data=?  WHERE id=?;";
 
         try
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setString(1, obj2.getUsername());
-            stat.setString(2, obj2.getPassword());
+            stat.setString(1, obj2.getDateTime());
+            stat.setBlob(2, obj2.getContent());
             stat.setInt(3, obj1.getId());
 
             stat.executeUpdate();
@@ -145,12 +142,11 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean delete(User obj)
-    {
+    public boolean delete(Message obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "DELETE FROM chatroom.user where id=?;";
+        String query = "DELETE FROM chatroom.message where id=?;";
 
         try
         {
@@ -175,15 +171,15 @@ public class UserDAO implements DAOI<User>
         return false;
     }
 
-    private List<User> createUsers(ResultSet rs)
+    private List<Message> createMessages(ResultSet rs)
     {
-        List<User> results = new ArrayList<>();
+        List<Message> results = new ArrayList<>();
 
         try
         {
             while(rs.next())
             {
-                User instance = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                Message instance = new Message(rs.getInt("id"), rs.getString("date"), rs.getBlob("data"));
                 results.add(instance);
             }
 
