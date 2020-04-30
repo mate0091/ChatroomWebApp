@@ -4,6 +4,11 @@ public class RoomMsg
 {
     private int id, room_id, msg_id;
 
+    public RoomMsg()
+    {
+        this(0, 0);
+    }
+
     public RoomMsg(int id, int room_id, int msg_id) {
         this(room_id, msg_id);
         this.id = id;

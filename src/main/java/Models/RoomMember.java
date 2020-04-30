@@ -6,6 +6,11 @@ public class RoomMember
     private int user_id, room_id;
     private String role;
 
+    public RoomMember()
+    {
+        this(0, 0, "");
+    }
+
     public RoomMember(int id, int user_id, int room_id, String role) {
         this(user_id, room_id, role);
         this.id = id;

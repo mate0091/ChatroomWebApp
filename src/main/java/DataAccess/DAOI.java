@@ -8,6 +8,6 @@ public interface DAOI<T>
     List<T> findAll();
     T findById(int id);
     boolean insert(T obj);
-    boolean update(T obj1, T obj2);
-    boolean delete(T obj);
+    boolean update(int id, T obj2);
+    boolean delete(int id);
 }

@@ -112,7 +112,7 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean update(User obj1, User obj2)
+    public boolean update(int id, User obj2)
     {
         Connection conn = null;
         PreparedStatement stat = null;
@@ -125,7 +125,9 @@ public class UserDAO implements DAOI<User>
             stat = conn.prepareStatement(query);
             stat.setString(1, obj2.getUsername());
             stat.setString(2, obj2.getPassword());
-            stat.setInt(3, obj1.getId());
+            stat.setInt(3, id);
+
+            System.out.println(stat.toString());
 
             stat.executeUpdate();
             return true;
@@ -145,7 +147,7 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean delete(User obj)
+    public boolean delete(int id)
     {
         Connection conn = null;
         PreparedStatement stat = null;
@@ -156,7 +158,7 @@ public class UserDAO implements DAOI<User>
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setInt(1, obj.getId());
+            stat.setInt(1, id);
 
             stat.executeUpdate();
             return true;

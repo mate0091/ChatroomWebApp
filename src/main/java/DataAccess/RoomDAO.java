@@ -109,7 +109,7 @@ public class RoomDAO implements DAOI<Room>
     }
 
     @Override
-    public boolean update(Room obj1, Room obj2) {
+    public boolean update(int id, Room obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -120,7 +120,7 @@ public class RoomDAO implements DAOI<Room>
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
             stat.setString(1, obj2.getType());
-            stat.setInt(2, obj1.getId());
+            stat.setInt(2, id);
 
             stat.executeUpdate();
             return true;
@@ -140,7 +140,7 @@ public class RoomDAO implements DAOI<Room>
     }
 
     @Override
-    public boolean delete(Room obj) {
+    public boolean delete(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -150,7 +150,7 @@ public class RoomDAO implements DAOI<Room>
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setInt(1, obj.getId());
+            stat.setInt(1, id);
 
             stat.executeUpdate();
             return true;

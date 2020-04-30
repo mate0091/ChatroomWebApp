@@ -111,7 +111,7 @@ public class FriendsDAO implements DAOI<Friends>
     }
 
     @Override
-    public boolean update(Friends obj1, Friends obj2) {
+    public boolean update(int id, Friends obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -123,7 +123,7 @@ public class FriendsDAO implements DAOI<Friends>
             stat = conn.prepareStatement(query);
             stat.setInt(1, obj2.getUserID1());
             stat.setInt(2, obj2.getUserID2());
-            stat.setInt(3, obj1.getId());
+            stat.setInt(3, id);
 
             stat.executeUpdate();
             return true;
@@ -143,7 +143,7 @@ public class FriendsDAO implements DAOI<Friends>
     }
 
     @Override
-    public boolean delete(Friends obj) {
+    public boolean delete(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -153,7 +153,7 @@ public class FriendsDAO implements DAOI<Friends>
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setInt(1, obj.getId());
+            stat.setInt(1, id);
 
             stat.executeUpdate();
             return true;

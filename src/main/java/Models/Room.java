@@ -5,6 +5,10 @@ public class Room
     private int id;
     private String type;
 
+    public Room() {
+        this("");
+    }
+
     public Room(int id, String type) {
         this(type);
         this.id = id;

@@ -111,7 +111,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
     }
 
     @Override
-    public boolean update(RoomMember obj1, RoomMember obj2) {
+    public boolean update(int id, RoomMember obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -124,7 +124,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
             stat.setInt(1, obj2.getUser_id());
             stat.setInt(2, obj2.getRoom_id());
             stat.setString(3, obj2.getRole());
-            stat.setInt(4, obj1.getId());
+            stat.setInt(4, id);
 
             stat.executeUpdate();
             return true;
@@ -144,7 +144,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
     }
 
     @Override
-    public boolean delete(RoomMember obj) {
+    public boolean delete(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -154,7 +154,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setInt(1, obj.getId());
+            stat.setInt(1, id);
 
             stat.executeUpdate();
             return true;

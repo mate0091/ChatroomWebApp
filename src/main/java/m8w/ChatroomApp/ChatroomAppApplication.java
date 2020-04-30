@@ -1,26 +1,25 @@
 package m8w.ChatroomApp;
 
 import DataAccess.DAOI;
-import DataAccess.RoomDAO;
-import Models.Room;
-import Models.User;
+import DataAccess.MessageDAO;
 import DataAccess.UserDAO;
+import HTMLgenerators.*;
+import HTMLgenerators.EditPage.UserEditPageGenerator;
+import HTMLgenerators.ShowPage.MessageShowPageGenerator;
+import Models.Message;
 
-import java.net.ServerSocket;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class ChatroomAppApplication {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
-		try
-		{
-			Server serv = new Server(8080);
-
-
-		}
-		catch (Exception e)
-		{
+		try {
+			Server serv = new Server(80);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

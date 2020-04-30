@@ -8,6 +8,10 @@ public class Message
     private String dateTime;
     private Blob content;
 
+    public Message() {
+        this("", null);
+    }
+
     public Message(int id, String dateTime, Blob content) {
         this(dateTime, content);
         this.id = id;

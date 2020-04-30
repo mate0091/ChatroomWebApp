@@ -1,27 +1,24 @@
-package m8w.ChatroomApp;
+package Controllers;
 
 import DataAccess.DAOI;
 import DataAccess.UserDAO;
 import Models.User;
 import com.google.common.base.Splitter;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import javax.jws.soap.SOAPBinding;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
+import java.net.Authenticator;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class ClientHandler implements HttpHandler
+public class AdminHandler implements HttpHandler
 {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException
@@ -31,8 +28,9 @@ public class ClientHandler implements HttpHandler
         String requestMethod = httpExchange.getRequestMethod();
         if(requestMethod.compareTo("GET") == 0)
         {
+            System.out.println();
             //process get method
-            byte[] response1 = Files.readAllBytes(Paths.get("src/templates/user_login.html"));
+            byte[] response1 = Files.readAllBytes(Paths.get("src/templates/admin_login.html"));
 
             httpExchange.sendResponseHeaders(200, response1.length);
             OutputStream out = httpExchange.getResponseBody();
@@ -53,40 +51,18 @@ public class ClientHandler implements HttpHandler
 
             Map<String, String> pairs = Splitter.on("&").withKeyValueSeparator("=").split(resp.toString());
 
-            DAOI<User> userDao = new UserDAO();
-            List<User> users = userDao.findAll();
-
-            String typedUser = pairs.get("login");
-            String typedPass = pairs.get("pass");
-
-            boolean flag = false;
-
-            for (User user : users)
+            if(pairs.get("login").compareTo("admin") == 0 && pairs.get("pass").compareTo("password") == 0)
             {
-                if(user.getUsername().compareTo(typedUser) == 0)
-                {
-                    if(user.getPassword().compareTo(typedPass) == 0)
-                    {
-                        flag = true;
-                    }
+                Headers headers = httpExchange.getResponseHeaders();
 
-                    break;
-                }
-            }
+                headers.set("Location", "/admin/CRUD");
 
-            if(flag)
-            {
-                byte[] response1 = Files.readAllBytes(Paths.get("src/templates/login_ok.html"));
-
-                httpExchange.sendResponseHeaders(200, response1.length);
-                OutputStream out = httpExchange.getResponseBody();
-                out.write(response1);
-                out.close();
+                httpExchange.sendResponseHeaders(302, 0);
             }
 
             else
             {
-                byte[] response1 = Files.readAllBytes(Paths.get("src/templates/user_login.html"));
+                byte[] response1 = Files.readAllBytes(Paths.get("src/templates/admin_login.html"));
 
                 httpExchange.sendResponseHeaders(200, response1.length);
                 OutputStream out = httpExchange.getResponseBody();

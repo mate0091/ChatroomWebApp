@@ -110,7 +110,7 @@ public class MessageDAO implements DAOI<Message>
     }
 
     @Override
-    public boolean update(Message obj1, Message obj2) {
+    public boolean update(int id, Message obj2) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -122,7 +122,7 @@ public class MessageDAO implements DAOI<Message>
             stat = conn.prepareStatement(query);
             stat.setString(1, obj2.getDateTime());
             stat.setBlob(2, obj2.getContent());
-            stat.setInt(3, obj1.getId());
+            stat.setInt(3, id);
 
             stat.executeUpdate();
             return true;
@@ -142,7 +142,7 @@ public class MessageDAO implements DAOI<Message>
     }
 
     @Override
-    public boolean delete(Message obj) {
+    public boolean delete(int id) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -152,7 +152,7 @@ public class MessageDAO implements DAOI<Message>
         {
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
-            stat.setInt(1, obj.getId());
+            stat.setInt(1, id);
 
             stat.executeUpdate();
             return true;

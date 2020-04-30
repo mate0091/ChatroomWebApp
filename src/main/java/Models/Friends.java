@@ -5,6 +5,10 @@ public class Friends
     private int id;
     private int userID1, userID2;
 
+    public Friends() {
+        this(0, 0);
+    }
+
     public Friends(int id, int userID1, int userID2)
     {
         this(userID1, userID2);

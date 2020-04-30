@@ -6,6 +6,11 @@ public class User
     private String username;
     private String password;
 
+    public User()
+    {
+        this("", "");
+    }
+
     public User(int id, String username, String password)
     {
         this(username, password);
@@ -32,6 +37,6 @@ public class User
 
     @Override
     public String toString() {
-        return "ID: " + id + " username: " + username;
+        return "ID: " + id + " username: " + username + " password: " + password;
     }
 }
