@@ -3,10 +3,7 @@ package DataAccess;
 import Models.User;
 import MySQLConnection.ConnectionFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +77,7 @@ public class UserDAO implements DAOI<User>
     }
 
     @Override
-    public boolean insert(User obj)
+    public int insert(User obj)
     {
         Connection conn = null;
         PreparedStatement stat = null;
@@ -90,12 +87,17 @@ public class UserDAO implements DAOI<User>
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setString(1, obj.getUsername());
             stat.setString(2, obj.getPassword());
 
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -108,7 +110,7 @@ public class UserDAO implements DAOI<User>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override
@@ -177,7 +179,7 @@ public class UserDAO implements DAOI<User>
         return false;
     }
 
-    private List<User> createUsers(ResultSet rs)
+    public List<User> createUsers(ResultSet rs)
     {
         List<User> results = new ArrayList<>();
 

@@ -6,6 +6,7 @@ import MySQLConnection.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
     }
 
     @Override
-    public boolean insert(RoomMember obj) {
+    public int insert(RoomMember obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -86,7 +87,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setInt(1, obj.getUser_id());
             stat.setInt(2, obj.getRoom_id());
             stat.setString(3, obj.getRole());
@@ -94,7 +95,13 @@ public class RoomMemberDAO implements DAOI<RoomMember>
             System.out.println("Query: " + query + "\n");
 
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -107,7 +114,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override
@@ -173,7 +180,7 @@ public class RoomMemberDAO implements DAOI<RoomMember>
         return false;
     }
 
-    private List<RoomMember> createRoomMembers(ResultSet rs)
+    public List<RoomMember> createRoomMembers(ResultSet rs)
     {
         List<RoomMember> results = new ArrayList<>();
 

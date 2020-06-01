@@ -38,4 +38,14 @@ public class RoomMember
     public String getRole() {
         return role;
     }
+
+    @Override
+    public String toString() {
+        return "RoomMember{" +
+                "id=" + id +
+                ", user_id=" + user_id +
+                ", room_id=" + room_id +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

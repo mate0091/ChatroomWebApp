@@ -3,9 +3,11 @@ package DataAccess;
 import Models.Room;
 import MySQLConnection.ConnectionFactory;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +79,7 @@ public class RoomDAO implements DAOI<Room>
     }
 
     @Override
-    public boolean insert(Room obj) {
+    public int insert(Room obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -86,13 +88,16 @@ public class RoomDAO implements DAOI<Room>
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setString(1, obj.getType());
 
-            System.out.println("Query: " + query + "\n");
-
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -105,7 +110,7 @@ public class RoomDAO implements DAOI<Room>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override

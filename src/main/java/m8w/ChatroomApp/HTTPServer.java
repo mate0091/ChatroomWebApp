@@ -9,9 +9,9 @@ import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 
 
-public class Server
+public class HTTPServer
 {
-   public Server(int port) throws Exception
+   public HTTPServer(int port) throws Exception
    {
        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
        server.createContext("/login", new ClientHandler());

@@ -6,6 +6,7 @@ import MySQLConnection.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,23 +78,27 @@ public class RoomMsgDAO implements DAOI<RoomMsg>
     }
 
     @Override
-    public boolean insert(RoomMsg obj) {
+    public int insert(RoomMsg obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "INSERT INTO chatroom.room_msg (room_id, msg_id) VALUES(?, ?);";
+        String query = "INSERT INTO chatroom.room_msg (room_id, message_id) VALUES(?, ?);";
 
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setInt(1, obj.getRoom_id());
             stat.setInt(2, obj.getMsg_id());
 
-            System.out.println("Query: " + query + "\n");
-
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -106,7 +111,7 @@ public class RoomMsgDAO implements DAOI<RoomMsg>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override
@@ -114,7 +119,7 @@ public class RoomMsgDAO implements DAOI<RoomMsg>
         Connection conn = null;
         PreparedStatement stat = null;
 
-        String query = "UPDATE chatroom.room_msg SET room_id=?, msg_id=? WHERE id=?;";
+        String query = "UPDATE chatroom.room_msg SET room_id=?, message_id=? WHERE id=?;";
 
         try
         {
@@ -171,7 +176,7 @@ public class RoomMsgDAO implements DAOI<RoomMsg>
         return false;
     }
 
-    private List<RoomMsg> createRoomMessages(ResultSet rs)
+    public List<RoomMsg> createRoomMessages(ResultSet rs)
     {
         List<RoomMsg> results = new ArrayList<>();
 
@@ -179,7 +184,7 @@ public class RoomMsgDAO implements DAOI<RoomMsg>
         {
             while(rs.next())
             {
-                RoomMsg instance = new RoomMsg(rs.getInt("id"), rs.getInt("room_id"), rs.getInt("msg_id"));
+                RoomMsg instance = new RoomMsg(rs.getInt("id"), rs.getInt("room_id"), rs.getInt("message_id"));
                 results.add(instance);
             }
 

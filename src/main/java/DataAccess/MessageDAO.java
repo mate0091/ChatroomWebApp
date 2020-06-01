@@ -6,6 +6,7 @@ import MySQLConnection.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class MessageDAO implements DAOI<Message>
     }
 
     @Override
-    public boolean insert(Message obj) {
+    public int insert(Message obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -86,14 +87,18 @@ public class MessageDAO implements DAOI<Message>
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setString(1, obj.getDateTime());
-            stat.setBlob(2, obj.getContent());
-
-            System.out.println("Query: " + query + "\n");
+            stat.setString(2, obj.getContent());
 
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -106,7 +111,7 @@ public class MessageDAO implements DAOI<Message>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override
@@ -121,7 +126,7 @@ public class MessageDAO implements DAOI<Message>
             conn = ConnectionFactory.getConnection();
             stat = conn.prepareStatement(query);
             stat.setString(1, obj2.getDateTime());
-            stat.setBlob(2, obj2.getContent());
+            stat.setString(2, obj2.getContent());
             stat.setInt(3, id);
 
             stat.executeUpdate();
@@ -171,7 +176,7 @@ public class MessageDAO implements DAOI<Message>
         return false;
     }
 
-    private List<Message> createMessages(ResultSet rs)
+    public List<Message> createMessages(ResultSet rs)
     {
         List<Message> results = new ArrayList<>();
 
@@ -179,7 +184,7 @@ public class MessageDAO implements DAOI<Message>
         {
             while(rs.next())
             {
-                Message instance = new Message(rs.getInt("id"), rs.getString("date"), rs.getBlob("data"));
+                Message instance = new Message(rs.getInt("id"), rs.getString("date"), rs.getString("data"));
                 results.add(instance);
             }
 

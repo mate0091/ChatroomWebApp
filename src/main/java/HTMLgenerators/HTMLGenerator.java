@@ -16,7 +16,7 @@ public abstract class HTMLGenerator
                 "</html>";
     }
 
-    private String header()
+    protected String header()
     {
         return "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +

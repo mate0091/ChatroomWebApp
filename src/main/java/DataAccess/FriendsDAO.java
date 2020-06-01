@@ -6,6 +6,7 @@ import MySQLConnection.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class FriendsDAO implements DAOI<Friends>
     }
 
     @Override
-    public boolean insert(Friends obj) {
+    public int insert(Friends obj) {
         Connection conn = null;
         PreparedStatement stat = null;
 
@@ -87,14 +88,18 @@ public class FriendsDAO implements DAOI<Friends>
         try
         {
             conn = ConnectionFactory.getConnection();
-            stat = conn.prepareStatement(query);
+            stat = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stat.setInt(1, obj.getUserID1());
             stat.setInt(2, obj.getUserID2());
 
-            System.out.println("Query: " + query + "\n");
-
             stat.executeUpdate();
-            return true;
+
+            ResultSet rs = stat.getGeneratedKeys();
+
+            if(rs != null && rs.next())
+            {
+                return rs.getInt(1);
+            }
         }
         catch (Exception e)
         {
@@ -107,7 +112,7 @@ public class FriendsDAO implements DAOI<Friends>
             ConnectionFactory.close(conn);
         }
 
-        return false;
+        return 0;
     }
 
     @Override

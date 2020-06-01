@@ -2,6 +2,8 @@ package Controllers;
 
 import DataAccess.DAOI;
 import DataAccess.UserDAO;
+import HTMLgenerators.AppPageGenerator;
+import HTMLgenerators.HTMLGenerator;
 import Models.User;
 import com.google.common.base.Splitter;
 import com.sun.net.httpserver.HttpExchange;
@@ -76,7 +78,8 @@ public class ClientHandler implements HttpHandler
 
             if(flag)
             {
-                byte[] response1 = Files.readAllBytes(Paths.get("src/templates/login_ok.html"));
+                HTMLGenerator gen = new AppPageGenerator(pairs.get("login"), pairs.get("pass"));
+                byte[] response1 = gen.generate().getBytes();
 
                 httpExchange.sendResponseHeaders(200, response1.length);
                 OutputStream out = httpExchange.getResponseBody();

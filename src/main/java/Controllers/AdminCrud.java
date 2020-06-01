@@ -166,26 +166,15 @@ public class AdminCrud implements HttpHandler
         else if(table.compareToIgnoreCase("Message") == 0)
         {
             DAOI<Message> dao = new MessageDAO();
-            byte[] bytes = params.get("content").getBytes("UTF-8");
-            java.sql.Blob blob = null;
-            try {
-                blob = ConnectionFactory.getConnection().createBlob();
-                blob.setBytes(1, bytes);
-            }
-
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
 
             if(edit)
             {
-                item = new Message(Integer.parseInt(params.get("id")), params.get("dateTime"), blob);
+                item = new Message(Integer.parseInt(params.get("id")), params.get("date"), params.get("data"));
                 dao.update(Integer.parseInt(params.get("id")), (Message) item);
             }
 
             else {
-                item = new Message(params.get("dateTime"), blob);
+                item = new Message(params.get("dateTime"), params.get("data"));
                 dao.insert((Message) item);
             }
         }
